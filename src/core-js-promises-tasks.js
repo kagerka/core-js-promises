@@ -96,11 +96,11 @@ function getFirstResolvedPromiseResult(promises) {
 function getFirstPromiseResult(promises) {
   const result = new Promise((resolve, reject) => {
     promises.forEach((promise) => {
-      resolve(promise);
       reject();
+      return resolve(promise);
     });
   });
-  result.then((resolve) => resolve[0]);
+  result.then((resolve) => resolve[0]).catch();
   return result;
 }
 
