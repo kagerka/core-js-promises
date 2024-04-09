@@ -116,22 +116,18 @@ function getFirstPromiseResult(promises) {
  * [Promise.resolve(1), Promise.reject(2), Promise.resolve(3)] => Promise rejected with 2
  */
 function getAllOrNothing(promises) {
-  const arr = [];
-  const result = new Promise((resolve, reject) => {
-    promises.forEach((promise) => {
-      resolve(promise);
-      return reject();
+  return Promise.allSettled(promises).then((res) => {
+    const arr = [];
+    res.forEach(function fn(item) {
+      if (item.status === 'fulfilled') {
+        arr.push(item.value);
+      } else {
+        return item;
+      }
+      return arr;
     });
+    return arr;
   });
-  result
-    .then((resolve) =>
-      resolve.forEach((item) => {
-        arr.push(item);
-        return arr;
-      })
-    )
-    .catch();
-  return result;
 }
 
 /**
@@ -146,8 +142,18 @@ function getAllOrNothing(promises) {
  * [Promise.resolve(1), Promise.resolve(2), Promise.resolve(3)] => Promise fulfilled with [1, 2, 3]
  * [Promise.resolve(1), Promise.reject(2), Promise.resolve(3)]  => Promise fulfilled with [1, null, 3]
  */
-function getAllResult(/* promises */) {
-  throw new Error('Not implemented');
+function getAllResult(promises) {
+  return Promise.allSettled(promises).then((res) => {
+    const arr = [];
+    res.forEach((item) => {
+      if (item.status === 'fulfilled') {
+        arr.push(item.value);
+      } else {
+        arr.push(null);
+      }
+    });
+    return arr;
+  });
 }
 
 /**
