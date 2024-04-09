@@ -174,8 +174,28 @@ function getAllResult(promises) {
  * [promise1, promise4, promise3] => Promise.resolved('104030')
  * [promise1, promise4, promise3, promise2] => Promise.resolved('10403020')
  */
-function queuPromises(/* promises */) {
-  throw new Error('Not implemented');
+function queuPromises(promises) {
+  return new Promise((resolve) => {
+    const arr = [];
+    promises.forEach((item, i) => {
+      item.then((value) => {
+        arr.push({ value, index: i });
+        if (promises.length === arr.length) {
+          resolve(arr);
+        }
+      });
+    });
+  })
+    .then((value) => {
+      return value.sort((a, b) => a.index - b.index);
+    })
+    .then((value) => {
+      let str = '';
+      value.forEach((item) => {
+        str += item.value;
+      });
+      return str;
+    });
 }
 
 module.exports = {
